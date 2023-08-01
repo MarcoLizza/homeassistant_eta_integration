@@ -17,6 +17,8 @@ from .const import (
     CHOOSEN_ENTITIES
 )
 
+import logging
+_LOGGER = logging.getLogger(__name__)
 
 class EtaFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for Eta."""
@@ -113,7 +115,7 @@ class EtaFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         session = async_get_clientsession(self.hass)
         eta_client = EtaAPI(session, host, port)
         float_dict = await eta_client.get_float_sensors()
-
+        _LOGGER.debug(f"fetched #{len(float_dict)} sensor entries")
         return float_dict
 
     async def _test_url(self, host, port):

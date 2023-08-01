@@ -57,6 +57,7 @@ async def async_setup_entry(
         )
         for entity in choosen_entities
     ]
+    _LOGGER.info(f"adding #{len(sensors)} sensor(s)")
     async_add_entities(sensors, update_before_add=True)
 
 
@@ -76,7 +77,7 @@ class EtaSensor(SensorEntity):
           - name - Friendly name, e.g "Außentemperatur" in local language
 
         """
-        _LOGGER.warning("ETA Integration - init sensor")
+        _LOGGER.info("ETA Integration - init sensor")
 
         self._attr_device_class = self.determine_device_class(unit)
 
@@ -98,6 +99,8 @@ class EtaSensor(SensorEntity):
         self.uri = uri
         self.host = config.get(CONF_HOST)
         self.port = config.get(CONF_PORT)
+
+        _LOGGER.debug(f"sensor `{id}` (`{name}`) points to `{uri}`")
 
         # This must be a unique value within this domain. This is done using host
         self._attr_unique_id = "eta" + "_" + self.host + "." + name.replace(" ", "_")

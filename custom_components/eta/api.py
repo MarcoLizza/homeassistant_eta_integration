@@ -1,5 +1,7 @@
 import xmltodict
+import logging
 
+_LOGGER = logging.getLogger(__name__)
 
 class EtaAPI:
     def __init__(self, session, host, port):
@@ -63,6 +65,7 @@ class EtaAPI:
             value = raw_value / scale_factor
             value = round(value, decimal_places)
         else:
+            _LOGGER.warning(f"unit `{unit}` is not supported, using string value")
             # use default text string representation for values that cannot be parsed properly
             value = data["@strValue"]
         return value, unit
@@ -91,11 +94,21 @@ class EtaAPI:
         float_dict = {}
         for key in sensor_dict:
             try:
-                value, unit = await self.get_data(sensor_dict[key])
+                uri = sensor_dict[key]
+                _LOGGER.debug(f"fetching key `{key}` from URI `{uri}`")
+
+                value, unit = await self.get_data(uri)
+                _LOGGER.debug(f"key `{key}` has value `{value}` and unit `{unit}`")
+
                 if unit not in self._float_sensor_units:
+                    _LOGGER.warning(f"unit `{unit}` for key `{key}` is *not* supported")
                     continue
+
                 cleaned_key = key.lower().replace(" ", "_")
-                float_dict[cleaned_key] = (sensor_dict[key], value, unit)
+                _LOGGER.debug(f"key `{key}` cleaned as `{cleaned_key}`")
+
+                float_dict[cleaned_key] = (uri, value, unit)
+                _LOGGER.info(f"stored value `{value}` w/ unit `{unit}` for key {key}")
             except:
                 pass
         return float_dict
