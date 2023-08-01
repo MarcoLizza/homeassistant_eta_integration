@@ -1,12 +1,12 @@
 {
   "domain": "eta",
   "name": "Eta Sensors",
-  "codeowners": ["@nigl"],
+  "codeowners": ["@MarcoLizza"],
   "config_flow": true,
   "dependencies": [],
-  "documentation": "https://github.com/nigl/homeassistant_eta_integration",
+  "documentation": "https://github.com/MarcoLizza/homeassistant_eta_integration",
   "iot_class": "local_polling",
-  "issue_tracker": "https://github.com/nigl/homeassistant_eta_integration/issues",
+  "issue_tracker": "https://github.com/MarcoLizza/homeassistant_eta_integration/issues",
   "requirements": ["xmltodict"],
   "version": "0.0.1"
 }
