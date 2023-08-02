@@ -37,19 +37,20 @@ class EtaAPI:
     def build_uri(self, suffix):
         return "http://" + self._host + ":" + str(self._port) + suffix
 
-    def evaluate_xml_dict(self, xml_dict, uri_dict, prefix=""):
+    def evaluate_xml_dict(self, xml_dict, uri_dict, prefix="", keys=set()):
         if type(xml_dict) == list:
             for child in xml_dict:
-                self.evaluate_xml_dict(child, uri_dict, prefix)
+                self.evaluate_xml_dict(child, uri_dict, prefix, keys)
         else:
+            key = f"{prefix}_{xml_dict['@name']}"
+            while key in keys:
+                key += '*'
+            keys.add(key)
+
+            uri_dict[key] = xml_dict["@uri"]
+
             if "object" in xml_dict:
-                child = xml_dict["object"]
-                new_prefix = f"{prefix}_{xml_dict['@name']}"
-                # add parent to uri_dict and evaluate childs then
-                uri_dict[f"{prefix}_{xml_dict['@name']}"] = xml_dict["@uri"]
-                self.evaluate_xml_dict(child, uri_dict, new_prefix)
-            else:
-                uri_dict[f"{prefix}_{xml_dict['@name']}"] = xml_dict["@uri"]
+                self.evaluate_xml_dict(xml_dict["object"], uri_dict, key, keys)
 
     async def get_request(self, suffix):
         data = await self._session.get(self.build_uri(suffix))
