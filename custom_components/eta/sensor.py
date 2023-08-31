@@ -112,7 +112,10 @@ class EtaSensor(SensorEntity):
         """
         eta_client = EtaAPI(self.session, self.host, self.port)
         value, _ = await eta_client.get_data(self.uri)
-        self._attr_native_value = float(value)
+        try:
+            self._attr_native_value = float(value)
+        except Exception:
+            _LOGGER.warning("exception while converting sensor data to float")
 
     @staticmethod
     def determine_device_class(unit):
